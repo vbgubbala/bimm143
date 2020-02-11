@@ -1,0 +1,109 @@
+---
+title: "Analysis of Human Breast Cancer Data"
+author: "Vikas Gubbala"
+date: "2/6/2020"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Importing the data into R
+```{r}
+library(ggplot2)
+
+fna.data <- "data/WisconsinCancer.csv"
+wisc.df <- read.csv("data/WisconsinCancer.csv")
+
+new <- read.csv("data/new_samples.csv")
+```
+
+Preparing the Data
+```{r}
+wisc.data <- as.matrix(wisc.df[,3:32])
+row.names(wisc.data) <- wisc.df$id
+diagnosis <- wisc.df[,2]
+
+head(wisc.data)
+#head(diagnosis)
+```
+
+Exploratory Data Analysis
+```{r}
+print(paste("Number of rows = ", nrow(wisc.data)))
+print(paste("Number of malignant samples = ", sum(diagnosis == "M")))
+print(paste("Number of avg characteristics = ", sum(grepl("_mean", colnames(wisc.data)))))
+```
+
+
+Performing PCA
+```{r}
+wisc.pr <- prcomp(wisc.data, scale = TRUE)
+#summary(wisc.pr)
+```
+From the results it seems that 99% of variation can be explained by PC1 captures 44% of the variation in the original data set, and PC2 captures 19%. Three PCs are required to capture 70% of the variance of the original dataset, and seven PCs are required to capture 90% of the variance. 
+
+
+Interpreting PCA results
+```{r}
+pr_df <- as.data.frame(wisc.pr$x)
+pr_df$group <- diagnosis
+plot <- ggplot(pr_df,aes(x=PC1,y=PC2,color=group)) + geom_point(pch = 1) + theme_classic() + scale_colour_discrete(name = "Diagnosis", breaks = c("B", "M"), labels = c("Benign", "Malignant"))
+plot
+```
+
+Explaining Variance
+```{r}
+pr.var = wisc.pr$sdev^2
+pve <- pr.var / sum(pr.var)
+
+#pve_plot <- ggplot(as.data.frame(pve)) + geom_bar()
+#pve_plot
+
+barplot(pve, ylab = "Precent of Variance Explained",
+     names.arg=paste0("PC",1:length(pve)), las=2, axes = FALSE)
+axis(2, at=pve, labels=round(pve,2)*100 )
+```
+
+Communicating PCA Results
+
+```{r}
+#finish this part!
+```
+
+Clustering in PC Space
+
+```{r}
+#Dendrogram Clustering
+wisc.pr.hclust = hclust(dist(wisc.pr$x[,1:3]), method = "ward.D2")
+plot(wisc.pr.hclust, labels = FALSE)
+groups <- cutree(wisc.pr.hclust, k=2)
+table(groups, diagnosis)
+```
+
+```{r}
+#Graphing PCA by dendrogram clustering
+wisc.pr.hclust = hclust(dist(wisc.pr$x[,1:3]), method = "ward.D2")
+groups <- cutree(wisc.pr.hclust, k=2)
+table(groups, diagnosis)
+plot <- ggplot(pr_df,aes(x=PC1,y=PC2)) + geom_point(pch = 1) + theme_classic() + scale_colour_discrete(name = "Diagnosis", breaks = c("B", "M"), labels = c("Benign", "Malignant"))
+g <- as.factor(3-groups)
+plot + aes(color = g)
+```
+
+Specificity Versus Sensitivity
+
+Minimizing FPs and FNs by altering clustering method, linkage method.
+
+Prediction
+
+```{r}
+npc <- predict(wisc.pr, newdata=new)
+npc
+plot(wisc.pr$x[,1:2], col=g)
+points(npc[,1], npc[,2], col="blue", pch=16, cex=3)
+text(npc[,1], npc[,2], c(1,2), col="white")
+```
+
+
