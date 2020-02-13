@@ -1,0 +1,33 @@
+---
+title: "Visualizing Protein Structure"
+author: "Vikas Gubbala"
+date: "2/13/2020"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## PDB statistics
+
+Herwe we look at types of structues in the main PDB database.
+
+PDB > Analyze > Statistics > exp method > download csv.
+
+```{r}
+pdb_stats <- read.csv("data/Data Export Summary.csv", row.names =1)
+
+pdb_pctg <- 100 * pdb_stats$Total / sum(pdb_stats$Total)
+names(pdb_pctg) <- names(pdb_stats)
+
+pct_xray = 
+print(pct_xray)
+
+pct_em = 100*pdb_stats$Total[3]/sum(pdb_stats$Total)
+print(pct_em)
+
+pct_prot = 100*sum(pdb_stats$Proteins)/sum(pdb_stats$Total)
+print(pct_prot)
+```
+
