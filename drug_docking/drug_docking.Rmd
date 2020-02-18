@@ -1,0 +1,35 @@
+---
+title: "Drug Docking"
+author: "Vikas Gubbala"
+date: "2/18/2020"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(bio3d)
+```
+
+
+## In Silico drug docking to HIV-1 protease '1HSG'.
+
+First, we download and format the 1HSG PDB structure using functions from the Bio3D package. Examining the hsg PDB variable, we see that the file contains a protein, non-protein Merck drug, and non-protein water molecules.
+
+```{r}
+hsg <- read.pdb(get.pdb('1hsg'))
+protein <- trim.pdb(hsg, "protein")
+ligand <- trim.pdb(hsg, "ligand")
+
+write.pdb(protein, file = "1hsg_protein.pdb")
+write.pdb(ligand, file = "1hsg_ligand.pdb")
+```
+Inspecting the formatted objects.
+```{r}
+hsg
+#ligand
+#protein
+```
+
