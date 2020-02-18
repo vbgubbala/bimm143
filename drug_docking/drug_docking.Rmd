@@ -33,3 +33,5 @@ hsg
 #protein
 ```
 
+The protein and ligand files were prepared for docking using MGLTools. First, hydrogens were added to the structure, and a pdbqt file was generated to include atom charges.
+
