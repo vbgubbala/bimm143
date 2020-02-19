@@ -76,15 +76,20 @@ to all.pdbqt. We will now convert all.pdbqt to a PDB file for
 visualization in VMD.
 
 ``` r
-res <- read.pdb("all.pdbqt", multi = TRUE)
-write.pdb(res, "results.pdb")
+res <- read.pdb("pdbqts/all.pdbqt", multi = TRUE)
+write.pdb(res, "pdbs/results.pdb")
 ```
 
-In order to assess quality of the docs, we will calculate root mean
-squared distance.
+![1HSG](images/dock.png)
+
+Figure 2 - Comparison between crystallography (green) and in silico
+(muli-color) determination methods for ligand binding.
+
+In order to further assess quality of the docs, we will calculate root
+mean squared distance.
 
 ``` r
-ori <- read.pdb("ligand.pdbqt")
+ori <- read.pdb("pdbqts/ligand.pdbqt")
 rmsd(ori, res)
 ```
 
