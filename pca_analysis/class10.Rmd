@@ -9,35 +9,45 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Importing the data into R
+
+## Description
+
+In this exercise, we will apply unsupervised learning to human breast cancer data in order to predict malignancy from epithelial cell morphologies.
+
+Principal component analysis (PCA) will be performed on the dataset, and dendrogram clustering will be performed on the transformed principal components in order to generate a model to predict malignancy.
+
+## Exploratory Data Analysis
+
+**Importing the Data** - First, we read the dataset into R and import the necessary packages
 ```{r}
 library(ggplot2)
 
 fna.data <- "data/WisconsinCancer.csv"
 wisc.df <- read.csv("data/WisconsinCancer.csv")
-
 new <- read.csv("data/new_samples.csv")
 ```
 
-Preparing the Data
+**Preparing the Data** - Next, we format the data for easy, downstream analysis.
 ```{r}
 wisc.data <- as.matrix(wisc.df[,3:32])
 row.names(wisc.data) <- wisc.df$id
 diagnosis <- wisc.df[,2]
 
 head(wisc.data)
-#head(diagnosis)
 ```
 
-Exploratory Data Analysis
+**Exploratory Data Analysis**
 ```{r}
 print(paste("Number of rows = ", nrow(wisc.data)))
 print(paste("Number of malignant samples = ", sum(diagnosis == "M")))
 print(paste("Number of avg characteristics = ", sum(grepl("_mean", colnames(wisc.data)))))
 ```
 
+## Principal Component Analysis
 
-Performing PCA
+PCA is performed on the dataset in order to reduce dimensionality and visualize the data.
+
+**Performing PCA**
 ```{r}
 wisc.pr <- prcomp(wisc.data, scale = TRUE)
 #summary(wisc.pr)
@@ -45,7 +55,7 @@ wisc.pr <- prcomp(wisc.data, scale = TRUE)
 From the results it seems that 99% of variation can be explained by PC1 captures 44% of the variation in the original data set, and PC2 captures 19%. Three PCs are required to capture 70% of the variance of the original dataset, and seven PCs are required to capture 90% of the variance. 
 
 
-Interpreting PCA results
+**Interpreting PCA results** - Plotting the transformed data on a graph (x = PC1,  y = PC2, color = malignancy) reveals distinct clustering of benign and malignant tumor samples.
 ```{r}
 pr_df <- as.data.frame(wisc.pr$x)
 pr_df$group <- diagnosis
@@ -53,26 +63,21 @@ plot <- ggplot(pr_df,aes(x=PC1,y=PC2,color=group)) + geom_point(pch = 1) + theme
 plot
 ```
 
-Explaining Variance
+**Explaining Variance** - A scree plot is constructed in order to visualize the percent variance explained by each principal component.
 ```{r}
 pr.var = wisc.pr$sdev^2
 pve <- pr.var / sum(pr.var)
-
-#pve_plot <- ggplot(as.data.frame(pve)) + geom_bar()
-#pve_plot
 
 barplot(pve, ylab = "Precent of Variance Explained",
      names.arg=paste0("PC",1:length(pve)), las=2, axes = FALSE)
 axis(2, at=pve, labels=round(pve,2)*100 )
 ```
 
-Communicating PCA Results
+## Hierarchical Clustering
 
-```{r}
-#finish this part!
-```
+Hierarchical clustering is applied to the principal components.
 
-Clustering in PC Space
+**Clustering in PC Space**
 
 ```{r}
 #Dendrogram Clustering

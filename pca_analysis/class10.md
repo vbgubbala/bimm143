@@ -3,18 +3,31 @@ Analysis of Human Breast Cancer Data
 Vikas Gubbala
 2/6/2020
 
-Importing the data into R
+## Description
+
+In this exercise, we will apply unsupervised learning to human breast
+cancer data in order to predict malignancy from epithelial cell
+morphologies.
+
+Principal component analysis (PCA) will be performed on the dataset, and
+dendrogram clustering will be performed on the transformed principal
+components in order to generate a model to predict malignancy.
+
+## Exploratory Data Analysis
+
+**Importing the Data** - First, we read the dataset into R and import
+the necessary packages
 
 ``` r
 library(ggplot2)
 
 fna.data <- "data/WisconsinCancer.csv"
 wisc.df <- read.csv("data/WisconsinCancer.csv")
-
 new <- read.csv("data/new_samples.csv")
 ```
 
-Preparing the Data
+**Preparing the Data** - Next, we format the data for easy, downstream
+analysis.
 
 ``` r
 wisc.data <- as.matrix(wisc.df[,3:32])
@@ -81,12 +94,8 @@ head(wisc.data)
     ## 84358402                 0.07678
     ## 843786                   0.12440
 
-``` r
-#head(diagnosis)
-```
-
-Exploratory Data
-Analysis
+**Exploratory Data
+Analysis**
 
 ``` r
 print(paste("Number of rows = ", nrow(wisc.data)))
@@ -106,7 +115,12 @@ print(paste("Number of avg characteristics = ", sum(grepl("_mean", colnames(wisc
 
     ## [1] "Number of avg characteristics =  10"
 
-Performing PCA
+## Principal Component Analysis
+
+PCA is performed on the dataset in order to reduce dimensionality and
+visualize the data.
+
+**Performing PCA**
 
 ``` r
 wisc.pr <- prcomp(wisc.data, scale = TRUE)
@@ -119,7 +133,9 @@ captures 44% of the variation in the original data set, and PC2 captures
 original dataset, and seven PCs are required to capture 90% of the
 variance.
 
-Interpreting PCA results
+**Interpreting PCA results** - Plotting the transformed data on a graph
+(x = PC1, y = PC2, color = malignancy) reveals distinct clustering of
+benign and malignant tumor samples.
 
 ``` r
 pr_df <- as.data.frame(wisc.pr$x)
@@ -130,14 +146,12 @@ plot
 
 ![](class10_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
-Explaining Variance
+**Explaining Variance** - A scree plot is constructed in order to
+visualize the percent variance explained by each principal component.
 
 ``` r
 pr.var = wisc.pr$sdev^2
 pve <- pr.var / sum(pr.var)
-
-#pve_plot <- ggplot(as.data.frame(pve)) + geom_bar()
-#pve_plot
 
 barplot(pve, ylab = "Precent of Variance Explained",
      names.arg=paste0("PC",1:length(pve)), las=2, axes = FALSE)
@@ -146,13 +160,11 @@ axis(2, at=pve, labels=round(pve,2)*100 )
 
 ![](class10_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
-Communicating PCA Results
+## Hierarchical Clustering
 
-``` r
-#finish this part!
-```
+Hierarchical clustering is applied to the principal components.
 
-Clustering in PC Space
+**Clustering in PC Space**
 
 ``` r
 #Dendrogram Clustering
@@ -160,7 +172,7 @@ wisc.pr.hclust = hclust(dist(wisc.pr$x[,1:3]), method = "ward.D2")
 plot(wisc.pr.hclust, labels = FALSE)
 ```
 
-![](class10_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](class10_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ``` r
 groups <- cutree(wisc.pr.hclust, k=2)
@@ -190,7 +202,7 @@ g <- as.factor(3-groups)
 plot + aes(color = g)
 ```
 
-![](class10_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](class10_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 Specificity Versus Sensitivity
 
@@ -225,4 +237,4 @@ points(npc[,1], npc[,2], col="blue", pch=16, cex=3)
 text(npc[,1], npc[,2], c(1,2), col="white")
 ```
 
-![](class10_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](class10_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
