@@ -1,0 +1,76 @@
+---
+title: "Comparative Structure Analysis of Adenylate Kinase"
+author: "Vikas Gubbala"
+date: "2/18/2020"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+In this exercise, we run structural analyses on adenylate kinase. First we seach for sequences similar to the adenylate kinase protein 1AKE and perform an alignment. Next, we perform principal component analysis on the structures and peform dendrogram clustering.
+
+```{r}
+#importing relevant packages
+
+library(bio3d)
+library(ggplot2)
+library(ggrepel)
+library(httr)
+library(msa)
+library(XML)
+library(RCurl)
+```
+
+## Fetching and Alignment
+
+First, we get the amino acid sequence of adenylate kinase, and then perform a blast to get proteins with homologous sequences. The blast results can be visualized in the following plot.
+
+```{r}
+seq <- get.seq("1ake_A")
+
+hits <- NULL
+hits$pdb.id <- c('1AKE_A','4X8M_A','6S36_A','6RZE_A','4X8H_A','3HPR_A','1E4V_A','5EJE_A','1E4Y_A','3X2S_A','6HAP_A','6HAM_A','4K46_A','4NP6_A','3GMT_A','4PZL_A')
+
+#blast <- blast.pdb(seq)
+#hits <- plot(blast)
+files <- get.pdb(hits$pdb.id, path="pdbs", split=TRUE, gzip=TRUE)
+```
+
+We can visualize 1AKE with vmd,
+
+Next, we run alignment on our blast hits and plot the results along with a dendrogram clustering.
+
+```{r}
+align <- pdbaln(files, fit = TRUE, exefile = "msa")
+id <- basename.pdb(align$id)
+plot(align, labels = id)
+```
+
+## Annotating PDB structures
+
+The function `pdb.annotate()` can be used to annotate the PDB files.
+
+```{r}
+annotate <- pdb.annotate(id)
+annotate
+```
+
+
+## Principal Component Analysis
+
+```{r}
+pca_pdb <- pca(align)
+plot(pca_pdb)
+```
+
+Next we calculate the root mean square distance to allow for dendrogram clustering
+
+```{r}
+rmsd <- rmsd(align)
+rmsd_hclust <- hclust(dist(rmsd))
+rmsd_groups <- cutree(rmsd_hclust, k = 3)
+plot(pca_pdb, 1:2)
+```
+

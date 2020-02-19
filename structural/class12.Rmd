@@ -9,25 +9,58 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## PDB statistics
+## Structural Analysis of HIV-1 Protease
 
-Herwe we look at types of structues in the main PDB database.
+HIV-1 protease is essential for the formation of HIV proteins. Inhibition of this protein may aid in the suppress viral replication. In this analysis, we will look at the PDB file 1HSG, which contains the protease bound to the drug indinavir.
 
-PDB > Analyze > Statistics > exp method > download csv.
+PDB files contain lists of atoms along with coordinates. Sometimes, additional information like secondary structure is added.
 
 ```{r}
-pdb_stats <- read.csv("data/Data Export Summary.csv", row.names =1)
-
-pdb_pctg <- 100 * pdb_stats$Total / sum(pdb_stats$Total)
-names(pdb_pctg) <- names(pdb_stats)
-
-pct_xray = 
-print(pct_xray)
-
-pct_em = 100*pdb_stats$Total[3]/sum(pdb_stats$Total)
-print(pct_em)
-
-pct_prot = 100*sum(pdb_stats$Proteins)/sum(pdb_stats$Total)
-print(pct_prot)
+library(bio3d)
+library(ggplot2)
+library(ggrepel)
 ```
 
+## Working with Single PDB files.
+
+The 1HSG file is read from the online database.
+
+```{r}
+#accesses online pdb file
+pdb <- read.pdb("1hsg")
+
+# summary of pdb object
+pdb 
+```
+
+We can select for certain attributes as well.
+
+`attributes(pdb)` - returns attributes of the object
+`pdb$atom` - selection of the attribute 'atom'
+`pdb$atom[rows, cols]` - subset of atoms
+
+
+```{r}
+#attributes of PDB object
+attributes(pdb) 
+
+#selects an attribute of the object
+head(pdb$atom) 
+
+#FINISH THIS
+
+protein <- atom.select(pdb, "protein", value = TRUE)
+ligand <- atom.select(pdb, "ligand", value = TRUE)
+```
+
+
+
+Protein Visualization is done in the software VMD.
+
+```{r}
+## Do this!!
+```
+
+## Aligning multiple PDB files
+
+For this, MUSCLE is needed.
