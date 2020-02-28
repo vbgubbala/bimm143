@@ -338,12 +338,6 @@ data(go.subs.hs)
 gobpsets = go.sets.hs[go.subs.hs$BP]
 gobpres = gage(foldchanges, gsets=gobpsets, same.dir=TRUE)
 
-print("Pathways - Up")
-```
-
-    ## [1] "Pathways - Up"
-
-``` r
 head(gobpres$greater)
 ```
 
@@ -361,12 +355,6 @@ head(gobpres$greater)
     ## GO:0007610 behavior                       0.2244344      427 2.195494e-04
     ## GO:0060562 epithelial tube morphogenesis  0.3712298      257 5.932837e-04
     ## GO:0035295 tube development               0.3712298      391 5.953254e-04
-
-``` r
-print("Pathways - Down")
-```
-
-    ## [1] "Pathways - Down"
 
 ``` r
 head(gobpres$less)

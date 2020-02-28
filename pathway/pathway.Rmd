@@ -139,10 +139,8 @@ data(go.subs.hs)
 gobpsets = go.sets.hs[go.subs.hs$BP]
 gobpres = gage(foldchanges, gsets=gobpsets, same.dir=TRUE)
 
-print("Pathways - Up")
 head(gobpres$greater)
 
-print("Pathways - Down")
 head(gobpres$less)
 ```
 
